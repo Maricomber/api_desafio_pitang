@@ -6,6 +6,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.api.dtos.UserDTO;
@@ -42,6 +43,12 @@ public class UserServiceImpl implements UserService{
 	public void delete(Integer idUser) throws SQLException {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public UserDTO findByUserName(String userName) throws UsernameNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
