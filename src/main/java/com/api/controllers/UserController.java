@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,23 +42,20 @@ public class UserController {
 	    @ApiResponse(code = 500, message = "Error."),
 	})
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody ResponseEntity<ResponseDTO<List<UserDTO>>> findAll(HttpServletRequest request) {
+	public @ResponseBody ResponseEntity<?> findAll(HttpServletRequest request) {
 		
-		ResponseDTO<List<UserDTO>> response = new ResponseDTO<>();
 		List<String>erros = new ArrayList<>();
 		
 		try{
 			List<UserDTO>UserDTO = this.service.findAll();
 			
 			if(UserDTO.isEmpty()) {
-				throw new SQLDataException("User not found.");
+				throw new SQLDataException("No records.");
 			}
-			response.setData(UserDTO);
-			return ResponseEntity.ok(response);
+			return ResponseEntity.ok(UserDTO);
 		}catch (Exception e) {
 			erros.add(e.getMessage());
-			response.setErrors(erros);
-			return ResponseEntity.badRequest().body(response);
+			return ResponseEntity.badRequest().body(erros);
 		}
 		
 	}
@@ -69,25 +67,18 @@ public class UserController {
 	    @ApiResponse(code = 500, message = "Error."),
 	})
 	@GetMapping(path = {"/{id}"},produces = MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody ResponseEntity<ResponseDTO<UserDTO>> findById(@PathVariable Integer id){
+	public @ResponseBody ResponseEntity<?> findById(@PathVariable Integer id){
 		
 		List<String>erros = new ArrayList<>();
-		ResponseDTO<UserDTO>response = new ResponseDTO<>();
-		UserDTO UserDTO;
 		
 		try {
-			
 			if(id == null) {
-				throw new InvalidAttributesException("Campos em branco");
+				throw new InvalidAttributesException("Missing fields.");
 			}
-			
-			UserDTO= this.service.findById(id);
-			response.setData(UserDTO);
-			return ResponseEntity.ok(response);
+			return ResponseEntity.ok(this.service.findById(id));
 		}catch (Exception e) {
 			erros.add(e.getMessage());
-			response.setErrors(erros);
-			return ResponseEntity.badRequest().body(response);
+			return ResponseEntity.badRequest().body(erros);
 		}
 		
 	}
@@ -99,24 +90,20 @@ public class UserController {
 	    @ApiResponse(code = 500, message = "Error"),
 	})
 	@PostMapping
-	public @ResponseBody ResponseEntity<ResponseDTO<UserDTO>> save(@RequestBody UserDTO UserDTO) {
+	public @ResponseBody ResponseEntity<?> save(@RequestBody UserDTO userDTO) {
 		
-		ResponseDTO<UserDTO> response = new ResponseDTO<>();
 		List<String>erros = new ArrayList<>();
-		
+		BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 		try {
-
-			if(UserDTO == null) {
-				throw new InvalidAttributesException("Campos vazios. ");
+			if(userDTO == null) {
+				throw new InvalidAttributesException("Missing fields.");
 			}
-			UserDTO = this.service.save(UserDTO);
-			response.setData(UserDTO);
-			return ResponseEntity.ok(response);
+			userDTO.setPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));
+			return ResponseEntity.ok(this.service.save(userDTO));
 			
 		}catch (Exception e) {
 			erros.add(e.getMessage());
-			response.setErrors(erros);
-			return ResponseEntity.badRequest().body(response);
+			return ResponseEntity.badRequest().body(erros);
 		}
 		
 	}
@@ -128,22 +115,18 @@ public class UserController {
 	    @ApiResponse(code = 500, message = "Error."),
 	})
 	@PutMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes =  MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody ResponseEntity<ResponseDTO<UserDTO>> update(@RequestBody UserDTO UserDTO){
+	public @ResponseBody ResponseEntity<?> update(@RequestBody UserDTO UserDTO){
 		
 		List<String>erros = new ArrayList<>();
-		ResponseDTO<UserDTO>response = new ResponseDTO<>();
 		
 		try {
-			UserDTO = this.service.save(UserDTO);
-			if(UserDTO == (null)) {
-				return ResponseEntity.badRequest().body(response);
+			if(UserDTO.getIdUser() == (null)) {
+				throw new InvalidAttributesException("Missing fields.");
 			}
-		response.setData(UserDTO);
-		return ResponseEntity.ok(response);
+			return ResponseEntity.ok(this.service.save(UserDTO));
 		}catch (Exception e) {
 			erros.add(e.getMessage());
-			response.setErrors(erros);
-			return ResponseEntity.badRequest().body(response);
+			return ResponseEntity.badRequest().body(erros);
 		}
 	}
 
@@ -154,22 +137,19 @@ public class UserController {
 	    @ApiResponse(code = 500, message = "Error."),
 	})
 	@DeleteMapping("/{id}")
-	public @ResponseBody ResponseEntity<ResponseDTO<String>> delete(@PathVariable Integer id) {
+	public @ResponseBody ResponseEntity<?> delete(@PathVariable Integer id) {
 		
-		ResponseDTO<String> response = new ResponseDTO<>();
 		List<String>erros = new ArrayList<>();
 		
 		try {
 			if(id == null) {
-				throw new InvalidAttributesException("Campos em branco. ");
+				throw new InvalidAttributesException("Missing fields.");
 			}
 			this.service.delete(id);
-			response.setData("User deleted successfully!");
 		}catch (Exception e) {
 			erros.add(e.getMessage());
-			response.setErrors(erros);
-			return ResponseEntity.badRequest().body(response);
+			return ResponseEntity.badRequest().body(erros);
 		}
-		return ResponseEntity.ok(response);
+		return ResponseEntity.ok("");
 	}
 }

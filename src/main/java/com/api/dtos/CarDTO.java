@@ -11,6 +11,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CarDTO {
 
+	private Integer idCar;
+	
 	private int year;
 	
 	private String licensePlate;

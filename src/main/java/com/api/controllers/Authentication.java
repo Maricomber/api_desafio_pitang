@@ -20,7 +20,7 @@ import com.api.services.impl.JwtUserDetailsService;
 
 @RestController
 @CrossOrigin
-public class JwtAuthenticationController {
+public class Authentication {
 	
 	@Autowired
 	private AuthenticationManager authenticationManager;
@@ -31,7 +31,7 @@ public class JwtAuthenticationController {
 	@Autowired
 	private JwtUserDetailsService userDetailsService;
 
-	@RequestMapping(value = "/authenticate", method = RequestMethod.POST)
+	@RequestMapping(value = "/api/signin", method = RequestMethod.POST)
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequestDTO authenticationRequest) throws Exception {
 		authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 		final UserDetails userDetails = userDetailsService
@@ -41,13 +41,13 @@ public class JwtAuthenticationController {
 	}
 
 	private void authenticate(String username, String password) throws Exception {
-	try {
-		authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-	} catch (DisabledException e) {
-		throw new Exception("USER_DISABLED", e);
-	} catch (BadCredentialsException e) {
-		throw new Exception("INVALID_CREDENTIALS", e);
-	}
+		try {
+			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+		} catch (DisabledException e) {
+			throw new Exception("USER_DISABLED", e);
+		} catch (BadCredentialsException e) {
+			throw new Exception("INVALID_CREDENTIALS", e);
+		}
 	}
 
 }

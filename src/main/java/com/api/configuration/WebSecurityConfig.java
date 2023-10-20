@@ -51,7 +51,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	// Não cheque essas requisições
 	.authorizeRequests()
 	.antMatchers("/authenticate").permitAll()
-    .antMatchers("/v2/api-docs", "/configuration/**", "/swagger*/**", "/webjars/**").permitAll()
+    .antMatchers("/v2/api-docs", "/configuration/**", "/swagger*/**", "/webjars/**", "/api/signin", "/api/users/**").permitAll()
     .anyRequest().authenticated().and().
 	exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
 	.sessionCreationPolicy(SessionCreationPolicy.STATELESS);

@@ -10,4 +10,5 @@ import com.api.entities.Users;
 @Repository
 public interface  UserRepository extends JpaRepository<Users, Integer>{
 	Users findByIdUser(Integer idUser);
+	Users findByEmail(String email);
 }
