@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.naming.directory.InvalidAttributesException;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -21,8 +22,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.api.dtos.ErrorResponseDTO;
 import com.api.dtos.ResponseDTO;
 import com.api.dtos.UserDTO;
+import com.api.enums.ErrorEnum;
+import com.api.exception.ApiPitangException;
 import com.api.services.UserService;
 
 import io.swagger.annotations.*;
@@ -47,15 +51,15 @@ public class UserController {
 		List<String>erros = new ArrayList<>();
 		
 		try{
-			List<UserDTO>UserDTO = this.service.findAll();
+			List<UserDTO>userDTO = this.service.findAll();
 			
-			if(UserDTO.isEmpty()) {
+			if(userDTO.isEmpty()) {
 				throw new SQLDataException("No records.");
 			}
-			return ResponseEntity.ok(UserDTO);
+			return ResponseEntity.ok(userDTO);
 		}catch (Exception e) {
 			erros.add(e.getMessage());
-			return ResponseEntity.badRequest().body(erros);
+			return ResponseEntity.badRequest().body(new ErrorResponseDTO(e.getMessage(), ErrorEnum.GENERAL.getErrorCode()));
 		}
 		
 	}
@@ -90,7 +94,7 @@ public class UserController {
 	    @ApiResponse(code = 500, message = "Error"),
 	})
 	@PostMapping
-	public @ResponseBody ResponseEntity<?> save(@RequestBody UserDTO userDTO) {
+	public @ResponseBody ResponseEntity<?> save(@Valid @RequestBody UserDTO userDTO) {
 		
 		List<String>erros = new ArrayList<>();
 		BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
@@ -101,7 +105,10 @@ public class UserController {
 			userDTO.setPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));
 			return ResponseEntity.ok(this.service.save(userDTO));
 			
-		}catch (Exception e) {
+		}catch (ApiPitangException e) {
+			return ResponseEntity.badRequest().body(new ErrorResponseDTO(e.getError()));
+		}
+		catch (Exception e) {
 			erros.add(e.getMessage());
 			return ResponseEntity.badRequest().body(erros);
 		}
@@ -115,16 +122,19 @@ public class UserController {
 	    @ApiResponse(code = 500, message = "Error."),
 	})
 	@PutMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes =  MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody ResponseEntity<?> update(@RequestBody UserDTO UserDTO){
+	public @ResponseBody ResponseEntity<?> update(@Valid @RequestBody UserDTO userDTO){
 		
 		List<String>erros = new ArrayList<>();
 		
 		try {
-			if(UserDTO.getIdUser() == (null)) {
+			if(userDTO.getIdUser() == (null)) {
 				throw new InvalidAttributesException("Missing fields.");
 			}
-			return ResponseEntity.ok(this.service.save(UserDTO));
-		}catch (Exception e) {
+			return ResponseEntity.ok(this.service.save(userDTO));
+		}catch (ApiPitangException e) {
+			return ResponseEntity.badRequest().body(new ErrorResponseDTO(e.getError()));
+		}
+		catch (Exception e) {
 			erros.add(e.getMessage());
 			return ResponseEntity.badRequest().body(erros);
 		}

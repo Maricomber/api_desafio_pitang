@@ -9,10 +9,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Clock;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.impl.DefaultClock;
 
 @Component
 public class JwtTokenUtil implements Serializable {
@@ -23,8 +21,6 @@ public class JwtTokenUtil implements Serializable {
 	private static final long serialVersionUID = 8733673237051872081L;
 
 	public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
-
-	private Clock clock = DefaultClock.INSTANCE;
 	
 	@Value("${jwt.secret}")
 	private String secret;

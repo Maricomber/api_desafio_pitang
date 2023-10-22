@@ -18,4 +18,6 @@ public interface CarService {
 	
 	void delete(Integer idCar) throws SQLException;
 	
+	Boolean existsLicensPlate(String licensePlate, Integer idCar);
+	
 }

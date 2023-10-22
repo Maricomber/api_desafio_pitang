@@ -15,7 +15,10 @@ import org.springframework.stereotype.Service;
 
 import com.api.dtos.UserDTO;
 import com.api.entities.Users;
+import com.api.enums.ErrorEnum;
+import com.api.exception.ApiPitangException;
 import com.api.repositories.UserRepository;
+import com.api.services.CarService;
 import com.api.services.UserService;
 
 @Service
@@ -26,6 +29,9 @@ public class UserServiceImpl implements UserService{
 	@Autowired
 	UserRepository repository;
 
+	@Autowired
+	CarService carService;
+	
 	private String msgErro;
 	
 	private ModelMapper mapper = new ModelMapper();
@@ -67,16 +73,17 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
-	public UserDTO save(UserDTO userDTO) throws SQLException {
-		if(userDTO == null){
-			throw new NoResultException("No records.");
-		}
+	public UserDTO save(UserDTO userDTO) throws SQLException,ApiPitangException   {
 		log.info("Saving user...");
 		try {
+			validateUser(userDTO);
 			Users user = mapper.map(userDTO, Users.class);
 			user.getCars().stream().forEach(car->car.setUsers(user));
 			return mapper.map(this.repository.save(user), UserDTO.class);
-		}catch (Exception e) {
+		}catch (ApiPitangException e) {
+			throw new ApiPitangException(e.getError());
+		}
+		catch (Exception e) {
 			msgErro = "Error saving user. "+e.getMessage();
 			log.info(msgErro);
 			throw new SQLException(msgErro);
@@ -113,6 +120,7 @@ public class UserServiceImpl implements UserService{
 			
 			userDTO.setEmail(user.getEmail());
 			userDTO.setPassword(user.getPassword());
+			userDTO.setIdUser(user.getIdUser());
 			return userDTO;
 		}catch (Exception e) {
 			msgErro = "Error searching user. "+e.getMessage();
@@ -121,4 +129,23 @@ public class UserServiceImpl implements UserService{
 		}
 	}
 
+	private void validateUser(UserDTO userDTO) {
+		Users user;
+		
+		userDTO.getCars().stream().forEach(car -> {
+			if(this.carService.existsLicensPlate(car.getLicensePlate(), car.getIdCar())) {
+				throw new ApiPitangException(ErrorEnum.PLATE_EXISTS);
+			}
+		});
+	
+		user = this.repository.findByLogin(userDTO.getLogin());
+		if(user != null && (userDTO.getIdUser() != user.getIdUser())) {
+			throw new ApiPitangException(ErrorEnum.LOGIN_ALREADY_EXISTS);
+		}
+		
+		user = this.repository.findByEmail(userDTO.getEmail());
+		if(user != null && (userDTO.getIdUser() != user.getIdUser())) {
+			throw new ApiPitangException(ErrorEnum.EMAIL_ALREADY_EXISTS);
+		}
+	}
 }
