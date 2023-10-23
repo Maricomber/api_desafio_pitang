@@ -4,12 +4,17 @@ import javax.annotation.Generated;
 import javax.servlet.http.HttpServletRequest;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.junit.tools.configuration.base.MethodRef;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 
 import com.api.dtos.CarDTO;
 
 @Generated(value = "org.junit-tools-1.1.0")
+@SpringBootTest
+@RunWith(MockitoJUnitRunner.class)
 public class CarControllerTest {
 
 	private CarController createTestSubject() {

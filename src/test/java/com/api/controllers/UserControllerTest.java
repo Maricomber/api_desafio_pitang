@@ -7,6 +7,7 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Generated;
 import javax.servlet.http.HttpServletRequest;
 
 import org.junit.Test;
@@ -28,6 +29,7 @@ import com.api.services.UserService;
 
 @SpringBootTest
 @RunWith(MockitoJUnitRunner.class)
+@Generated(value = "org.junit-tools-1.1.0")
 public class UserControllerTest {
 	
 	@Mock
