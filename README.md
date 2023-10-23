@@ -1,7 +1,27 @@
 # api_desafio_pitang
 
 
+<h1 align="left"> REQUISITOS PARA EXECUTAR A APLICAÇÃO: </h1>
+Instalar a biblioteca do JUnit tools - https://junit-tools.org/downloads/junit-tools-libraries.zip </br>
+Estar com a porta 8084 disponível (ou ajustar no application.properties a porta desejada).</br>
+Executar o processo de build do maven.</br>
+
+<h1 align="left"> OBSERVAÇÕES: </h1>
+URL do Swagger: http://localhost:8084/swagger-ui/index.html </br>
+URL do Kanban: https://github.com/users/Maricomber/projects/5
 <h1 align="left"> ESTÓRIAS DE USUÁRIO </h1>
+
+<h1 align="left"> OBSERVAÇÕES: </h1>
+
+1. Motivo da classe "WebSecurityConfig" ter sido implementada extendendo uma classe descontinada, foi as raras de informações da nova forma de realizar a mesma funcionalidade e o limite de entrega do projeto. 
+
+2. O enum de erros não seguiu o código informado no desafio devido ao objeto carros e usuarios apresentarem códigos iguais para erros diferentes, achei um pouco confuso e optei por deixar códigos diferentes.
+
+3. Optei pelo lombok por achar mais rápido a criação de classes, já que não preciso tar criando getters e setters sempre.
+
+4. A validação de alguns campos acabou sendo pelo Validation e outros pelo services, mas adotando o mesmo padrão de retorno.
+
+5. A conversão dos DTO's para Entidades foi feita com modelmap visando a redução do tempo e praticidade do desenvolvimento.
 
 <b>HU001 - Funcionalidade: Cadastro Usuário</b>
 
