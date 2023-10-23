@@ -1,6 +1,7 @@
 package com.api.entities;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -48,5 +49,5 @@ public class Users {
 	private String phone;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL, fetch =  FetchType.LAZY)
-	private List<Car> cars;
+	private List<Car> cars = new ArrayList<>();
 }

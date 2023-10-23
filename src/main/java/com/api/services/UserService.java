@@ -15,7 +15,7 @@ public interface UserService {
 	
 	UserDTO findById(Integer idPessoa) throws SQLException;
 	
-	UserDTO findByUserName(String userName) throws UsernameNotFoundException;
+	UserDTO findByEmail(String email) throws UsernameNotFoundException;
 	
 	UserDTO save(UserDTO UserDTO) throws SQLException;
 	

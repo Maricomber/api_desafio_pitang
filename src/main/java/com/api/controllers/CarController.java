@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.naming.directory.InvalidAttributesException;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -21,7 +22,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.api.dtos.CarDTO;
-import com.api.dtos.ResponseDTO;
 import com.api.services.CarService;
 
 import io.swagger.annotations.*;
@@ -41,23 +41,20 @@ public class CarController {
 	    @ApiResponse(code = 500, message = "Error."),
 	})
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody ResponseEntity<ResponseDTO<List<CarDTO>>> findAll(HttpServletRequest request) {
+	public @ResponseBody ResponseEntity<?> findAll(HttpServletRequest request) {
 		
-		ResponseDTO<List<CarDTO>> response = new ResponseDTO<>();
 		List<String>erros = new ArrayList<>();
 		
 		try{
-			List<CarDTO>CarDTO = this.service.findAll();
+			List<CarDTO>carDTO = this.service.findAll();
 			
-			if(CarDTO.isEmpty()) {
-				throw new SQLDataException("Car not found.");
+			if(carDTO.isEmpty()) {
+				throw new SQLDataException("No records.");
 			}
-			response.setData(CarDTO);
-			return ResponseEntity.ok(response);
+			return ResponseEntity.ok(carDTO);
 		}catch (Exception e) {
 			erros.add(e.getMessage());
-			response.setErrors(erros);
-			return ResponseEntity.badRequest().body(response);
+			return ResponseEntity.badRequest().body(erros);
 		}
 		
 	}
@@ -69,25 +66,18 @@ public class CarController {
 	    @ApiResponse(code = 500, message = "Error."),
 	})
 	@GetMapping(path = {"/{id}"},produces = MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody ResponseEntity<ResponseDTO<CarDTO>> findById(@PathVariable Integer id){
+	public @ResponseBody ResponseEntity<?> findById(@PathVariable Integer id){
 		
 		List<String>erros = new ArrayList<>();
-		ResponseDTO<CarDTO>response = new ResponseDTO<>();
-		CarDTO CarDTO;
 		
 		try {
-			
 			if(id == null) {
-				throw new InvalidAttributesException("Campos em branco");
+				throw new InvalidAttributesException("Missing fields.");
 			}
-			
-			CarDTO= this.service.findById(id);
-			response.setData(CarDTO);
-			return ResponseEntity.ok(response);
+			return ResponseEntity.ok(this.service.findById(id));
 		}catch (Exception e) {
 			erros.add(e.getMessage());
-			response.setErrors(erros);
-			return ResponseEntity.badRequest().body(response);
+			return ResponseEntity.badRequest().body(erros);
 		}
 		
 	}
@@ -99,24 +89,19 @@ public class CarController {
 	    @ApiResponse(code = 500, message = "Error"),
 	})
 	@PostMapping
-	public @ResponseBody ResponseEntity<ResponseDTO<CarDTO>> save(@RequestBody CarDTO CarDTO) {
+	public @ResponseBody ResponseEntity<?> save(@Valid @RequestBody CarDTO carDTO) {
 		
-		ResponseDTO<CarDTO> response = new ResponseDTO<>();
 		List<String>erros = new ArrayList<>();
-		
 		try {
-
-			if(CarDTO == null) {
-				throw new InvalidAttributesException("Campos vazios. ");
+			if(carDTO == null) {
+				throw new InvalidAttributesException("Missing fields.");
 			}
-			CarDTO = this.service.save(CarDTO);
-			response.setData(CarDTO);
-			return ResponseEntity.ok(response);
+			
+			return ResponseEntity.ok(this.service.save(carDTO));
 			
 		}catch (Exception e) {
 			erros.add(e.getMessage());
-			response.setErrors(erros);
-			return ResponseEntity.badRequest().body(response);
+			return ResponseEntity.badRequest().body(erros);
 		}
 		
 	}
@@ -128,22 +113,18 @@ public class CarController {
 	    @ApiResponse(code = 500, message = "Error."),
 	})
 	@PutMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes =  MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody ResponseEntity<ResponseDTO<CarDTO>> update(@RequestBody CarDTO CarDTO){
+	public @ResponseBody ResponseEntity<?> update(@Valid @RequestBody CarDTO carDTO){
 		
 		List<String>erros = new ArrayList<>();
-		ResponseDTO<CarDTO>response = new ResponseDTO<>();
 		
 		try {
-			CarDTO = this.service.save(CarDTO);
-			if(CarDTO == (null)) {
-				return ResponseEntity.badRequest().body(response);
+			if(carDTO.getIdCar() == (null)) {
+				throw new InvalidAttributesException("Missing fields.");
 			}
-		response.setData(CarDTO);
-		return ResponseEntity.ok(response);
+			return ResponseEntity.ok(this.service.save(carDTO));
 		}catch (Exception e) {
 			erros.add(e.getMessage());
-			response.setErrors(erros);
-			return ResponseEntity.badRequest().body(response);
+			return ResponseEntity.badRequest().body(erros);
 		}
 	}
 
@@ -154,22 +135,19 @@ public class CarController {
 	    @ApiResponse(code = 500, message = "Error."),
 	})
 	@DeleteMapping("/{id}")
-	public @ResponseBody ResponseEntity<ResponseDTO<String>> delete(@PathVariable Integer id) {
+	public @ResponseBody ResponseEntity<?> delete(@PathVariable Integer id) {
 		
-		ResponseDTO<String> response = new ResponseDTO<>();
 		List<String>erros = new ArrayList<>();
 		
 		try {
 			if(id == null) {
-				throw new InvalidAttributesException("Campos em branco. ");
+				throw new InvalidAttributesException("Missing fields.");
 			}
 			this.service.delete(id);
-			response.setData("Car deleted successfully!");
 		}catch (Exception e) {
 			erros.add(e.getMessage());
-			response.setErrors(erros);
-			return ResponseEntity.badRequest().body(response);
+			return ResponseEntity.badRequest().body(erros);
 		}
-		return ResponseEntity.ok(response);
+		return ResponseEntity.ok("");
 	}
 }

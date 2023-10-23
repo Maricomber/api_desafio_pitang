@@ -1,7 +1,6 @@
 package com.api.configuration;
 
 import java.io.Serializable;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +21,7 @@ public class JwtTokenUtil implements Serializable {
 	private static final long serialVersionUID = 8733673237051872081L;
 
 	public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
-
+	
 	@Value("${jwt.secret}")
 	private String secret;
 
@@ -61,11 +60,15 @@ public class JwtTokenUtil implements Serializable {
 
 	//Cria o token e devine tempo de expiração pra ele
 	private String doGenerateToken(Map<String, Object> claims, String subject) {
-		return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-		.setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
-		.signWith(SignatureAlgorithm.HS512, secret).compact();
+		final long now = System.currentTimeMillis();
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(subject)
+                .setIssuedAt(new Date(now))
+                .setExpiration(new Date(now + JWT_TOKEN_VALIDITY * 1000))
+                .signWith(SignatureAlgorithm.HS512, secret).compact();
 	}
-
+	
 	//valida o token
 	public Boolean validateToken(String token, UserDetails userDetails) {
 		final String username = getUsernameFromToken(token);
