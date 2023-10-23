@@ -2,8 +2,7 @@ package com.api.dtos;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.Length;
+import javax.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,7 +17,7 @@ public class CarDTO {
 
 	private Integer idCar;
 	
-	@Length(min = 4, max = 4, message = "Invalid fields")
+	@Size()
 	@NotNull(message = "Missing fields")
 	private int year;
 	

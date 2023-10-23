@@ -30,10 +30,12 @@ import com.api.exception.ApiPitangException;
 import com.api.services.UserService;
 
 import io.swagger.annotations.*;
+import lombok.Setter;
 
 
 @RestController
 @RequestMapping(path = {"/api/users"})
+@Setter
 public class UserController {
 
 	@Autowired

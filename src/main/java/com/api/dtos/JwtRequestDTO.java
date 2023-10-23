@@ -2,7 +2,7 @@ package com.api.dtos;
 
 import java.io.Serializable;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,10 +20,10 @@ public class JwtRequestDTO implements Serializable {
 	 */
 	private static final long serialVersionUID = 782212199643761603L;
 	
-	@NotNull(message = "Missing fields")
+	@NotBlank(message = "Missing fields")
 	private String username;
 	
-	@NotNull(message = "Missing fields")
+	@NotBlank(message = "Missing fields")
 	private String password;
 
 }
